@@ -55,6 +55,7 @@ dependencies {
 // retrofit2 (converter)
     implementation ("com.squareup.retrofit2:converter-gson:2.5.0")
     implementation ("com.kakao.maps.open:android:2.9.5")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

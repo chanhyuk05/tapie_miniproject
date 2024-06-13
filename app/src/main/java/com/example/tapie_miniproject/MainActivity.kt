@@ -1,13 +1,11 @@
 package com.example.tapie_miniproject
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,23 +15,47 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.tapie_miniproject.data.data_source.ApiResponse
+import com.example.tapie_miniproject.data.data_source.RetrofitInstance
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.KakaoMapSdk
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         KakaoMapSdk.init(this, "8ecb0b96396e81ab9d1d89bc69fd41b2")
         enableEdgeToEdge()
+        reportMissingPerson()
         setContent {
             KakaoMap()
         }
+    }
+
+    private fun reportMissingPerson() {
+        val call = RetrofitInstance.api.reportMissingPerson("10000647", "7a09589af6354b0d", "10")
+        call.enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+                    Log.d("test", "$apiResponse")
+                } else {
+                    Log.d("test", "error")
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.d("test", "error")
+            }
+        })
     }
 }
 
@@ -92,3 +114,4 @@ fun rememberMapView(
 
     return mapView
 }
+

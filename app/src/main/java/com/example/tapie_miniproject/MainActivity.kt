@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.tapie_miniproject.data.data_source.ApiResponse
+import com.example.tapie_miniproject.data.data_source.GeoResponses
+import com.example.tapie_miniproject.data.data_source.GeoRetrofit
 import com.example.tapie_miniproject.data.data_source.RetrofitInstance
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -40,12 +42,38 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     private fun reportMissingPerson() {
         val call = RetrofitInstance.api.reportMissingPerson("10000647", "7a09589af6354b0d", "10")
         call.enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                 if (response.isSuccessful) {
+                    Log.d("test", "hey")
                     val apiResponse = response.body()
+                    apiResponse?.list?.forEach {
+                        val call = GeoRetrofit.api.reportMissingPerson("KakaoAK c1d26ce24da260f69dd6c90cb9c38433","${it.occrAdres}")
+                        call.enqueue(object : Callback<GeoResponses> {
+                            override fun onResponse(
+                                gcall: Call<GeoResponses>,
+                                gresponse: Response<GeoResponses>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val GeoapiResponse = gresponse.body()
+                                    Log.d("test", "${GeoapiResponse!!.documents[0].address_name} ${GeoapiResponse!!.documents[0].x} ${GeoapiResponse!!.documents[0].y}")
+                                }
+                                else {
+                                    Log.d("test", "error")
+
+                                }
+                            }
+
+                            override fun onFailure(gcall: Call<GeoResponses>, t: Throwable) {
+                                Log.d("test", "$it $t")
+                            }
+
+
+                        })
+                    }
                     Log.d("test", "$apiResponse")
                 } else {
                     Log.d("test", "error")
@@ -68,7 +96,6 @@ fun KakaoMap() {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
     ) { paddingValue ->
         Box(
             modifier = Modifier
